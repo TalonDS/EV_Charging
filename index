@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Utility Dashboard | IONMAS LTD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* IONMAS LTD brand palette */
+            --ink:           #1a1a1a;
+            --accent:        #2d4a3e;
+            --bg:            #f7f5f2;
+            --white:         #ffffff;
+
+            --accent-light:  #7aad94;
+            --ink-light:     #6b6b6b;
+            --rule:          #d8d4ce;
+
+            --accent-dark:   #1e3329;
+            --footer-bg:     #111111;
+            --dark-rule:     #333333;
+            --muted:         #999999;
+            --ghost:         #666666;
+
+            /* result panel tints derived from brand greens */
+            --panel-a-bg:    #eef4f1;
+            --panel-a-border:#cfe2d8;
+            --panel-b-bg:    #f3f7f5;
+            --panel-b-border:#d6e6dd;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Jost', Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-weight: 300;
+        }
+
+        /* ---------- Header ---------- */
+        header {
+            background: var(--white);
+            border-bottom: 1px solid var(--rule);
+            padding: 28px 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .brand svg {
+            height: 46px;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        .brand-text h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-size: 1.4rem;
+            letter-spacing: 0.06em;
+            margin: 0;
+            color: var(--ink);
+        }
+
+        .brand-text p {
+            margin: 2px 0 0;
+            font-size: 0.78rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink-light);
+        }
+
+        /* ---------- Main ---------- */
+        main {
+            padding: 40px 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page-intro {
+            width: 100%;
+            max-width: 1100px;
+            margin-bottom: 28px;
+        }
+
+        .page-intro h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-size: 2.1rem;
+            margin: 0 0 6px;
+            color: var(--ink);
+        }
+
+        .page-intro p {
+            margin: 0;
+            color: var(--ink-light);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: var(--white);
+            border: 1px solid var(--rule);
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h2.card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            margin-top: 0;
+            color: var(--ink);
+            font-size: 1.4rem;
+            text-align: left;
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--rule);
+            padding-bottom: 14px;
+            letter-spacing: 0.01em;
+        }
+
+        .toggle-container {
+            display: flex;
+            background: var(--bg);
+            padding: 4px;
+            border-radius: 4px;
+            margin-bottom: 22px;
+            border: 1px solid var(--rule);
+        }
+
+        .toggle-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.04em;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--ink-light);
+        }
+
+        .toggle-btn.active {
+            background: var(--accent);
+            color: var(--white);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: var(--ink-light);
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .estimator-card input[type="range"] {
+            accent-color: var(--accent-light);
+        }
+
+        .value-display {
+            font-variant-numeric: tabular-nums;
+            font-weight: 500;
+            min-width: 78px;
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--ink);
+        }
+
+        .result-box {
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .breakeven-box {
+            background: var(--panel-a-bg);
+            border: 1px solid var(--panel-a-border);
+        }
+
+        .estimator-box {
+            background: var(--panel-b-bg);
+            border: 1px solid var(--panel-b-border);
+        }
+
+        .result-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--ink-light);
+        }
+
+        .result-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.4rem;
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        .estimator-box .result-value {
+            color: var(--accent-dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+            border-top: 1px solid var(--rule);
+            padding-top: 16px;
+            font-size: 0.85rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--ink-light);
+            margin-bottom: 4px;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .stat-val {
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            background: var(--footer-bg);
+            color: var(--muted);
+            padding: 28px 24px;
+            text-align: center;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+        }
+
+        footer strong {
+            color: var(--accent-light);
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 140" role="img" aria-label="IONMAS LTD logo">
+            <polygon fill="#2d4a3e"
+                points="70,6 122,35 122,95 70,124 18,95 18,35"/>
+            <polygon fill="none" stroke="#7aad94" stroke-width="2"
+                points="70,6 122,35 122,95 70,124 18,95 18,35"/>
+
+            <line stroke="#7aad94" stroke-width="1.6" stroke-linecap="round" x1="70" y1="65" x2="70" y2="14"/>
+            <line stroke="#7aad94" stroke-width="1.6" stroke-linecap="round" x1="70" y1="65" x2="115" y2="40"/>
+            <line stroke="#7aad94" stroke-width="1.6" stroke-linecap="round" x1="70" y1="65" x2="115" y2="90"/>
+            <line stroke="#7aad94" stroke-width="1.6" stroke-linecap="round" x1="70" y1="65" x2="70" y2="116"/>
+            <line stroke="#7aad94" stroke-width="1.6" stroke-linecap="round" x1="70" y1="65" x2="25" y2="90"/>
+            <line stroke="#7aad94" stroke-width="1.6" stroke-linecap="round" x1="70" y1="65" x2="25" y2="40"/>
+
+            <circle fill="#7aad94" cx="70" cy="65" r="5.5"/>
+
+            <circle fill="#d8d4ce" cx="70"  cy="14"  r="3.8"/>
+            <circle fill="#7aad94" cx="115" cy="40"  r="3.8"/>
+            <circle fill="#7aad94" cx="115" cy="90"  r="3.8"/>
+            <circle fill="#d8d4ce" cx="70"  cy="116" r="3.8"/>
+            <circle fill="#7aad94" cx="25"  cy="90"  r="3.8"/>
+            <circle fill="#7aad94" cx="25"  cy="40"  r="3.8"/>
+
+            <circle fill="#7aad94" opacity="0.45" cx="70"  cy="40"  r="2.5"/>
+            <circle fill="#7aad94" opacity="0.45" cx="93"  cy="53"  r="2.5"/>
+            <circle fill="#7aad94" opacity="0.45" cx="93"  cy="78"  r="2.5"/>
+            <circle fill="#7aad94" opacity="0.45" cx="70"  cy="91"  r="2.5"/>
+            <circle fill="#7aad94" opacity="0.45" cx="47"  cy="78"  r="2.5"/>
+            <circle fill="#7aad94" opacity="0.45" cx="47"  cy="53"  r="2.5"/>
+
+            <text x="148" y="78" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-size="46" font-weight="700" letter-spacing="7" fill="#1a1a1a">IONMAS</text>
+            <text x="149" y="96" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-size="10" font-weight="400" letter-spacing="5" fill="#6b6b6b">LTD</text>
+            <rect x="148" y="101" width="258" height="2" rx="1" fill="#2d4a3e"/>
+            <text x="149" y="118" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-size="10.5" font-weight="400" letter-spacing="3.5" fill="#6b6b6b">SAP EAM CONSULTING</text>
+        </svg>
+        <div class="brand-text">
+            <h1>IONMAS LTD</h1>
+            <p>EV Utility Dashboard</p>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="page-intro">
+        <h2>EV Cost &amp; Charging Tools</h2>
+        <p>Compare running costs against petrol or diesel, and estimate charging time and cost for your electric vehicle.</p>
+    </div>
+
+    <div class="dashboard-container">
+
+        <div class="card breakeven-card">
+            <h2 class="card-title">EV Breakeven Match Point</h2>
+
+            <div class="toggle-container">
+                <button class="toggle-btn active" id="petrolBtn" onclick="setFuelType('petrol')">Petrol</button>
+                <button class="toggle-btn" id="dieselBtn" onclick="setFuelType('diesel')">Diesel</button>
+            </div>
+
+            <div class="input-group">
+                <label id="fuelPriceLabel" for="fuelPrice">Petrol Price per Litre</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="fuelPrice" min="1.00" max="2.50" step="0.01" value="1.52">
+                    <span class="value-display" id="fuelPriceDisp">£1.52</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label id="efficiencyLabel" for="iceEfficiency">Petrol Car Efficiency (MPG)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="iceEfficiency" min="20" max="70" step="1" value="38">
+                    <span class="value-display" id="iceEfficiencyDisp">38 MPG</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="evEfficiency">EV Efficiency (miles / kWh)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="evEfficiency" min="2.0" max="5.5" step="0.1" value="4.0">
+                    <span class="value-display" id="evEfficiencyDisp">4.0 mi/kWh</span>
+                </div>
+            </div>
+
+            <div class="result-box breakeven-box">
+                <div class="result-title">Breakeven Electricity Price</div>
+                <div class="result-value" id="breakevenDisp">72.8p<span style="font-size: 1.1rem; font-weight: 400;">/kWh</span></div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">ICE Cost per Mile</div>
+                        <div class="stat-val" id="costPerMileDisp">18.2p</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">UK Gallon Vol.</div>
+                        <div class="stat-val">4.546L</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card estimator-card">
+            <h2 class="card-title">EV Charging Time Estimator</h2>
+
+            <div class="input-group">
+                <label for="batteryCapacity">Battery Capacity (kWh)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="batteryCapacity" min="20.0" max="120.0" step="0.1" value="82.3">
+                    <span class="value-display" id="batteryCapacityDisp">82.3 kWh</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="currentCharge">Current Charge (%)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="currentCharge" min="0" max="99" step="1" value="34">
+                    <span class="value-display" id="currentChargeDisp">34%</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="targetCharge">Target Charge (%)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="targetCharge" min="1" max="100" step="1" value="80">
+                    <span class="value-display" id="targetChargeDisp">80%</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="chargerSpeed">Charger Speed (kW)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="chargerSpeed" min="2.3" max="350" step="0.1" value="9.9">
+                    <span class="value-display" id="chargerSpeedDisp">9.9 kW</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="chargerPrice">Charger Price (pence per kWh)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="chargerPrice" min="0" max="100" step="1" value="19">
+                    <span class="value-display" id="chargerPriceDisp">19p</span>
+                </div>
+            </div>
+
+            <div class="result-box estimator-box">
+                <div class="result-title">Estimated Time Required</div>
+                <div class="result-value" id="timeRequiredDisp">3h 49m</div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Estimated Cost</div>
+                        <div class="stat-val" id="estimatedCostDisp">£7.91</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Energy Added</div>
+                        <div class="stat-val" id="energyAddedDisp">41.6 kWh</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <strong>IONMAS LTD</strong><br>
+    Registered in England &amp; Wales | Company No. [fill in] | VAT No. [fill in]<br>
+    Registered Address: [fill in]
+</footer>
+
+<script>
+    // --- BREAKEVEN CALCULATOR LOGIC ---
+    const fuelPriceInput = document.getElementById('fuelPrice');
+    const iceEfficiencyInput = document.getElementById('iceEfficiency');
+    const evEfficiencyInput = document.getElementById('evEfficiency');
+    const fuelPriceDisp = document.getElementById('fuelPriceDisp');
+    const iceEfficiencyDisp = document.getElementById('iceEfficiencyDisp');
+    const evEfficiencyDisp = document.getElementById('evEfficiencyDisp');
+    const breakevenDisp = document.getElementById('breakevenDisp');
+    const costPerMileDisp = document.getElementById('costPerMileDisp');
+    const petrolBtn = document.getElementById('petrolBtn');
+    const dieselBtn = document.getElementById('dieselBtn');
+    const fuelPriceLabel = document.getElementById('fuelPriceLabel');
+    const efficiencyLabel = document.getElementById('efficiencyLabel');
+
+    let currentFuelType = 'petrol';
+    const UK_GALLON_TO_LITRES = 4.54609;
+
+    function setFuelType(type) {
+        currentFuelType = type;
+        if (type === 'petrol') {
+            petrolBtn.classList.add('active');
+            dieselBtn.classList.remove('active');
+            fuelPriceLabel.textContent = 'Petrol Price per Litre';
+            efficiencyLabel.textContent = 'Petrol Car Efficiency (MPG)';
+            iceEfficiencyInput.value = 38;
+        } else {
+            dieselBtn.classList.add('active');
+            petrolBtn.classList.remove('active');
+            fuelPriceLabel.textContent = 'Diesel Price per Litre';
+            efficiencyLabel.textContent = 'Diesel Car Efficiency (MPG)';
+            iceEfficiencyInput.value = 45;
+        }
+        calculateBreakeven();
+    }
+
+    function calculateBreakeven() {
+        const fuelPrice = parseFloat(fuelPriceInput.value);
+        const iceMpg = parseFloat(iceEfficiencyInput.value);
+        const evMikh = parseFloat(evEfficiencyInput.value);
+
+        fuelPriceDisp.textContent = `£${fuelPrice.toFixed(2)}`;
+        iceEfficiencyDisp.textContent = `${iceMpg} MPG`;
+        evEfficiencyDisp.textContent = `${evMikh.toFixed(1)} mi/kWh`;
+
+        const litresPerMile = UK_GALLON_TO_LITRES / iceMpg;
+        const iceCostPerMilePence = (litresPerMile * fuelPrice) * 100;
+        const breakevenPencePerKwh = iceCostPerMilePence * evMikh;
+
+        costPerMileDisp.textContent = `${iceCostPerMilePence.toFixed(1)}p`;
+        breakevenDisp.innerHTML = `${breakevenPencePerKwh.toFixed(1)}p<span style="font-size: 1.1rem; font-weight: 400;">/kWh</span>`;
+    }
+
+    // --- ESTIMATOR CALCULATOR LOGIC ---
+    const batteryCapacityInput = document.getElementById('batteryCapacity');
+    const currentChargeInput = document.getElementById('currentCharge');
+    const targetChargeInput = document.getElementById('targetCharge');
+    const chargerSpeedInput = document.getElementById('chargerSpeed');
+    const chargerPriceInput = document.getElementById('chargerPrice');
+
+    const batteryCapacityDisp = document.getElementById('batteryCapacityDisp');
+    const currentChargeDisp = document.getElementById('currentChargeDisp');
+    const targetChargeDisp = document.getElementById('targetChargeDisp');
+    const chargerSpeedDisp = document.getElementById('chargerSpeedDisp');
+    const chargerPriceDisp = document.getElementById('chargerPriceDisp');
+
+    const timeRequiredDisp = document.getElementById('timeRequiredDisp');
+    const estimatedCostDisp = document.getElementById('estimatedCostDisp');
+    const energyAddedDisp = document.getElementById('energyAddedDisp');
+
+    function calculateEstimator() {
+        let b3 = parseFloat(batteryCapacityInput.value); // Capacity
+        let b4 = parseFloat(currentChargeInput.value);   // Current %
+        let b5 = parseFloat(targetChargeInput.value);   // Target %
+        let b6 = parseFloat(chargerSpeedInput.value);   // Speed kW
+        let b7 = parseFloat(chargerPriceInput.value);   // Price p
+
+        if (b4 >= b5) {
+            b4 = b5 - 1;
+            currentChargeInput.value = b4;
+        }
+
+        batteryCapacityDisp.textContent = `${b3.toFixed(1)} kWh`;
+        currentChargeDisp.textContent = `${b4}%`;
+        targetChargeDisp.textContent = `${b5}%`;
+        chargerSpeedDisp.textContent = `${b6.toFixed(1)} kW`;
+        chargerPriceDisp.textContent = `${b7}p`;
+
+        let totalMinutes = 0;
+        if (b6 <= 7) {
+            totalMinutes = ((b5 - b4) / 100 * b3) / b6 * 60;
+        } else if (b5 <= 80) {
+            totalMinutes = ((b5 - b4) / 100 * b3) / b6 * 60;
+        } else if (b4 >= 80) {
+            totalMinutes = ((b5 - b4) / 100 * b3) / (b6 * 0.4) * 60;
+        } else {
+            totalMinutes = (((80 - b4) / 100 * b3) / b6 * 60) + (((b5 - 80) / 100 * b3) / (b6 * 0.4) * 60);
+        }
+
+        const hours = Math.floor(totalMinutes / 60);
+        const mins = Math.round(totalMinutes % 60);
+        timeRequiredDisp.textContent = `${hours}h ${mins}m`;
+
+        const energyAdded = (b3 / 100) * (b5 - b4);
+        const estimatedCost = (b3 / 10000) * ((b5 - b4) * b7) * 1.1;
+
+        estimatedCostDisp.textContent = `£${estimatedCost.toFixed(2)}`;
+        energyAddedDisp.textContent = `${energyAdded.toFixed(1)} kWh`;
+    }
+
+    fuelPriceInput.addEventListener('input', calculateBreakeven);
+    iceEfficiencyInput.addEventListener('input', calculateBreakeven);
+    evEfficiencyInput.addEventListener('input', calculateBreakeven);
+
+    batteryCapacityInput.addEventListener('input', calculateEstimator);
+    currentChargeInput.addEventListener('input', calculateEstimator);
+    targetChargeInput.addEventListener('input', calculateEstimator);
+    chargerSpeedInput.addEventListener('input', calculateEstimator);
+    chargerPriceInput.addEventListener('input', calculateEstimator);
+
+    calculateBreakeven();
+    calculateEstimator();
+</script>
+
+</body>
+</html>
