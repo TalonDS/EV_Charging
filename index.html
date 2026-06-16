@@ -640,7 +640,7 @@
     }
     // Format display: show 1 decimal below 100 kW, round above
     function formatKw(kw) {
-        if (kw < 10)  return `${kw.toFixed(2)} kW`;
+        if (kw < 10)  return `${kw.toFixed(1)} kW`;
         if (kw < 100) return `${kw.toFixed(1)} kW`;
         return `${Math.round(kw)} kW`;
     }
