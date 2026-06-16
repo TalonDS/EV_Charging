@@ -515,7 +515,7 @@
                 <div class="input-group">
                     <label for="chargerSpeed">Charger Speed (kW)</label>
                     <div class="slider-wrapper">
-                        <input type="range" id="chargerSpeed" min="2.3" max="200" step="0.1" value="9.9">
+                        <input type="range" id="chargerSpeed" min="0" max="100" step="0.1" value="27.3">
                         <span class="value-display" id="chargerSpeedDisp">9.9 kW</span>
                     </div>
                 </div>
@@ -625,11 +625,31 @@
     const estimatedCostDisp = document.getElementById('estimatedCostDisp');
     const energyAddedDisp = document.getElementById('energyAddedDisp');
 
+    // Non-linear mapping: slider 0–100 → kW 2.3–350 via power curve
+    // Lower half of slider (~0–50) covers 2.3–22 kW (home/AC charging range)
+    // Upper half (~50–100) covers 22–350 kW (DC rapid/ultra-rapid)
+    const SPEED_MIN = 2.3;
+    const SPEED_MAX = 350;
+    function sliderToKw(t) {
+        // t is 0–100; map to 0–1 then apply exponential curve
+        const norm = t / 100;
+        return SPEED_MIN * Math.pow(SPEED_MAX / SPEED_MIN, norm);
+    }
+    function kwToSlider(kw) {
+        return (Math.log(kw / SPEED_MIN) / Math.log(SPEED_MAX / SPEED_MIN)) * 100;
+    }
+    // Format display: show 1 decimal below 100 kW, round above
+    function formatKw(kw) {
+        if (kw < 10)  return `${kw.toFixed(2)} kW`;
+        if (kw < 100) return `${kw.toFixed(1)} kW`;
+        return `${Math.round(kw)} kW`;
+    }
+
     function calculateEstimator() {
         let b3 = parseFloat(batteryCapacityInput.value); // Capacity
         let b4 = parseFloat(currentChargeInput.value);   // Current %
         let b5 = parseFloat(targetChargeInput.value);   // Target %
-        let b6 = parseFloat(chargerSpeedInput.value);   // Speed kW
+        let b6 = sliderToKw(parseFloat(chargerSpeedInput.value)); // Speed kW (mapped)
         let b7 = parseFloat(chargerPriceInput.value);   // Price p
 
         if (b4 >= b5) {
@@ -640,7 +660,7 @@
         batteryCapacityDisp.textContent = `${b3.toFixed(1)} kWh`;
         currentChargeDisp.textContent = `${b4}%`;
         targetChargeDisp.textContent = `${b5}%`;
-        chargerSpeedDisp.textContent = `${b6.toFixed(1)} kW`;
+        chargerSpeedDisp.textContent = formatKw(b6);
         chargerPriceDisp.textContent = `${b7}p`;
 
         let totalMinutes = 0;
